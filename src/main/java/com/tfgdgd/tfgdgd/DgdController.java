@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Sort;
 
 @Controller
 @RequestMapping("/generate-dgd")
@@ -72,7 +73,7 @@ public class DgdController {
     }
     
     @GetMapping("/edit-bulto")
-public String editarBulto(@RequestParam("id") long id, HttpSession session, Model model) {
+    public String editarBulto(@RequestParam("id") long id, HttpSession session, Model model) {
     List<BultoTemp> bultos = (List<BultoTemp>) session.getAttribute("bultos");
     BultoTemp bultoEditar = null;
     for (BultoTemp b : bultos) {
@@ -105,7 +106,7 @@ public String editarBulto(@RequestParam("id") long id, HttpSession session, Mode
             @RequestParam Long consigneeId,
             @RequestParam Long aeropuertoOrigenId,
             @RequestParam Long aeropuertoDestinoId,
-            @RequestParam String modoTransporte,
+            
             @RequestParam String telefonoEmergencia,
             @RequestParam String firmante,
             @RequestParam String lugarFirma,
@@ -121,7 +122,7 @@ public String editarBulto(@RequestParam("id") long id, HttpSession session, Mode
         dgd.setConsignee(consigneeRepository.findById(consigneeId).orElse(null));
         dgd.setAeropuertoOrigen(airportRepository.findById(aeropuertoOrigenId).orElse(null));
         dgd.setAeropuertoDestino(airportRepository.findById(aeropuertoDestinoId).orElse(null));
-        dgd.setModoTransporte(modoTransporte);
+        
         dgd.setTelefonoEmergencia(telefonoEmergencia);
         dgd.setFirmante(firmante);
         dgd.setLugarFirma(lugarFirma);
@@ -163,8 +164,14 @@ public String editarBulto(@RequestParam("id") long id, HttpSession session, Mode
         // Limpiar sesión
         session.removeAttribute("bultos");
 
-        
+        return "redirect:/generate-dgd/history";  // o a una confirmación
+    }
 
-        return "redirect:/history";  // o a una confirmación
+    @GetMapping("/history")
+    public String verHistorial(Model model) {
+        List<Dgd> historial = dgdRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        model.addAttribute("dgds", historial);
+        model.addAttribute("pageContent", "dgd/history.jsp");
+        return "index";
     }
 }

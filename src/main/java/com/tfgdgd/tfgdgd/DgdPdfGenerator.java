@@ -9,14 +9,15 @@ package com.tfgdgd.tfgdgd;
  * @author Francisco
  */
 
+
 import com.itextpdf.kernel.pdf.*;
-import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.properties.TextAlignment;
-import com.itextpdf.kernel.font.PdfFontFactory;
-
+import com.itextpdf.layout.properties.VerticalAlignment;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,67 +32,73 @@ public class DgdPdfGenerator {
         PdfDocument pdfDoc = new PdfDocument(reader, writer);
         Document document = new Document(pdfDoc);
 
-        PdfCanvas canvas = new PdfCanvas(pdfDoc.getFirstPage());
+        PdfFont font = PdfFontFactory.createFont();
 
-        // 🧾 Insertar campos básicos (ajustar coordenadas según plantilla)
-        canvas.beginText()
-            .setFontAndSize(PdfFontFactory.createRegisteredFont("Helvetica"), 10)
+        // Página única por ahora
+        int pageNum = 1;
 
+        // === Coordenadas base (ajustar según tu plantilla real) ===
+        document.showTextAligned(new Paragraph(dgd.getShipper().getNombre()).setFont(font).setFontSize(10),
+                50, 795, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
+        
+        document.showTextAligned(new Paragraph(dgd.getShipper().getDireccion()).setFont(font).setFontSize(10),
+                50, 785, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
+        
+        document.showTextAligned(new Paragraph(dgd.getShipper().getCiudad()).setFont(font).setFontSize(10),
+                50, 775, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
+        
+        document.showTextAligned(new Paragraph(dgd.getShipper().getPais()).setFont(font).setFontSize(10),
+                50, 765, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
 
-            .moveText(50, 750).showText(dgd.getShipper().getNombre()) // Shipper
-            .moveText(0, -40).showText(dgd.getConsignee().getNombre()) // Consignee
-            .moveText(0, -60).showText(dgd.getAeropuertoOrigen().getNombre()) // Airport Departure
-            .moveText(0, -20).showText(dgd.getAeropuertoDestino().getNombre()) // Airport Destination
-            .moveText(0, -20).showText("RADIOACTIVE") // Shipment Type
-            .moveText(0, -20).showText("PASSENGER AND CARGO AIRCRAFT") // Transport Type
-            .moveText(0, -20).showText("Tel. emergencia: " + dgd.getTelefonoEmergencia()) // Emergency
-            .moveText(0, -40).showText("Firmado por: " + dgd.getFirmante() + " - " + dgd.getLugarFirma()) // Firma
-            .moveText(0, -20).showText("Fecha: " + dgd.getFecha().toString())
-            .endText();
+        document.showTextAligned(new Paragraph(dgd.getConsignee().getNombre()).setFont(font).setFontSize(10),
+                50, 715, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
+        
+        document.showTextAligned(new Paragraph(dgd.getConsignee().getDireccion()).setFont(font).setFontSize(10),
+                50, 705, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
 
-        // 🧾 Insertar tabla de bultos
-        float startX = 50;
-        float startY = 500;
+        document.showTextAligned(new Paragraph(dgd.getAeropuertoOrigen().getCodigoIata()).setFont(font).setFontSize(10),
+                200, 560, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
+
+        document.showTextAligned(new Paragraph(dgd.getAeropuertoDestino().getCodigoIata()).setFont(font).setFontSize(10),
+                140, 485, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
+
+        document.showTextAligned(new Paragraph(dgd.getTelefonoEmergencia()).setFont(font).setFontSize(10),
+                50, 160, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
+
+        document.showTextAligned(new Paragraph(dgd.getFirmante()).setFont(font).setFontSize(10),
+                400, 130, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
+
+        document.showTextAligned(new Paragraph(dgd.getLugarFirma()).setFont(font).setFontSize(10),
+                400, 110, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
+
+        document.showTextAligned(new Paragraph(dgd.getFecha().toString()).setFont(font).setFontSize(10),
+                400, 90, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//bien
+
+        // === Tabla de Bultos (máx. 6 por página en esta versión simplificada) ===
+        float startY = 560;
         float lineHeight = 20;
-        int bultosPorPagina = 10;
-        int totalPaginas = (int) Math.ceil(bultos.size() / (float) bultosPorPagina);
+        int i = 0;
 
-        int index = 0;
-        for (int pagina = 1; pagina <= totalPaginas; pagina++) {
-            if (pagina > 1) {
-                pdfDoc.addNewPage(PageSize.A4);
-                document.showTextAligned(new Paragraph("Page " + pagina + " of " + totalPaginas),
-                        pdfDoc.getLastPage().getPageSize().getWidth() - 100, 20,
-                        pagina, TextAlignment.RIGHT, com.itextpdf.layout.properties.VerticalAlignment.BOTTOM, 0);
-            }
+        for (Bulto b : bultos) {
+            float y = startY - (i * lineHeight);
+            if (y < 180) break; // evitar solapar parte inferior
 
-            PdfCanvas bultoCanvas = new PdfCanvas(pdfDoc.getPage(pagina));
-            bultoCanvas.beginText()
-                .setFontAndSize(PdfFontFactory.createFont(), 9);
+            String linea = String.format("%s | %s | Clase 7 | %s | Actividad: %.2f MBq | TI: %.2f",
+                    b.getUnId(),
+                    b.getIsotope().getNombre(),
+                    b.getPackingInstruction(),
+                    b.getActividad(),
+                    b.getTi()
+            );
+            document.showTextAligned(new Paragraph("RADIOACTIVE MATERIAL, Type A package ").setFont(font).setFontSize(10),
+                55, y, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);//cambiar a tipo A
+            
+            document.showTextAligned(new Paragraph(linea).setFont(font).setFontSize(9),
+                    50, y, pageNum, TextAlignment.LEFT, VerticalAlignment.TOP, 0);
 
-            float y = startY;
-
-            for (int i = 0; i < bultosPorPagina && index < bultos.size(); i++, index++) {
-                Bulto b = bultos.get(index);
-                String linea = b.getUnId() + " - " + b.getIsotope().getNombre() +
-                        " - Actividad: " + b.getActividad() + " MBq - TI: " + b.getTi() +
-                        " - Cantidad: " + b.getCantidadBultos() + " - " + b.getCategoria();
-                bultoCanvas.moveText(startX, y).showText(linea);
-                y -= lineHeight;
-            }
-
-            bultoCanvas.endText();
-        }
-
-        // Pie de página
-        for (int i = 1; i <= pdfDoc.getNumberOfPages(); i++) {
-            document.showTextAligned(
-                    new Paragraph("Page " + i + " of " + pdfDoc.getNumberOfPages()),
-                    pdfDoc.getPage(i).getPageSize().getWidth() - 50, 20,
-                    i, TextAlignment.RIGHT, com.itextpdf.layout.properties.VerticalAlignment.BOTTOM, 0);
+            i++;
         }
 
         document.close();
     }
 }
-

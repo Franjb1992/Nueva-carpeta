@@ -12,51 +12,6 @@
 
 <form action="${pageContext.request.contextPath}/generate-dgd/add-bulto" method="post">
 
-    <!-- Datos generales del envio ------------------------------------------------>
-<div class="row mb-4">
-    <div class="col-md-6">
-        <label class="form-label fw-bold">Shipper</label>
-        <select name="shipperId" class="form-control" style="min-width: 100%;" required>
-            <c:forEach var="s" items="${shippers}">
-                <option value="${s.id}">${s.nombre}</option>
-            </c:forEach>
-        </select>
-    </div>
-    <div class="col-md-6">
-        <label class="form-label fw-bold">Consignee</label>
-        <select name="consigneeId" class="form-control" style="min-width: 100%;" required>
-            <c:forEach var="c" items="${consignees}">
-                <option value="${c.id}">${c.nombre}</option>
-            </c:forEach>
-        </select>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-md-6">
-        <label class="form-label fw-bold">Aeropuerto de Salida</label>
-        <select name="aeropuertoOrigenId" class="form-control" style="min-width: 100%;" required>
-            <c:forEach var="a" items="${aeropuertos}">
-                <option value="${a.id}" ${a.codigoIata == 'MAD' ? 'selected' : ''}>
-                    ${a.codigoIata} - ${a.nombre} (${a.ciudad})
-                </option>
-            </c:forEach>
-
-        </select>
-    </div>
-    <div class="col-md-6">
-        <label class="form-label fw-bold">Aeropuerto de Destino</label>
-        <select name="aeropuertoDestinoId" class="form-control" style="min-width: 100%;" required>
-            <c:forEach var="a" items="${aeropuertos}">
-                <option value="${a.id}">${a.codigoIata} - ${a.nombre} (${a.ciudad})</option>
-            </c:forEach>
-        </select>
-        <div id="aeropuertoAlerta" class="text-danger fw-bold mt-2" style="display: none;"></div>
-
-    </div>
-</div>
-
-
 
     <!-- Bultos ---------------------------------------------------------------------------->
       <h4 class="mt-4">Añadir Bulto</h4>
@@ -194,7 +149,50 @@
 <hr>
 
 <!-- Guardar la DGD y generar PDF -->
-<form action="${pageContext.request.contextPath}/generate-dgd/pdf" method="post">
+<form id="formularioDGD" action="${pageContext.request.contextPath}/generate-dgd/pdf" method="post">
+      <!-- Datos generales del envio ------------------------------------------------>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <label class="form-label fw-bold">Shipper</label>
+        <select name="shipperId" class="form-control" style="min-width: 100%;" required>
+            <c:forEach var="s" items="${shippers}">
+                <option value="${s.id}">${s.nombre}</option>
+            </c:forEach>
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-bold">Consignee</label>
+        <select name="consigneeId" class="form-control" style="min-width: 100%;" required>
+            <c:forEach var="c" items="${consignees}">
+                <option value="${c.id}">${c.nombre}</option>
+            </c:forEach>
+        </select>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <label class="form-label fw-bold">Aeropuerto de Salida</label>
+        <select name="aeropuertoOrigenId" class="form-control" style="min-width: 100%;" required>
+            <c:forEach var="a" items="${aeropuertos}">
+                <option value="${a.id}" ${a.codigoIata == 'MAD' ? 'selected' : ''}>
+                    ${a.codigoIata} - ${a.nombre} (${a.ciudad})
+                </option>
+            </c:forEach>
+
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-bold">Aeropuerto de Destino</label>
+        <select name="aeropuertoDestinoId" class="form-control" style="min-width: 100%;" required>
+            <c:forEach var="a" items="${aeropuertos}">
+                <option value="${a.id}">${a.codigoIata} - ${a.nombre} (${a.ciudad})</option>
+            </c:forEach>
+        </select>
+        <div id="aeropuertoAlerta" class="text-danger fw-bold mt-2" style="display: none;"></div>
+
+    </div>
+</div>
     <div class="row mb-3">
         <div class="col-md-4">
             <label>Teléfono Emergencia</label>
@@ -283,5 +281,20 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector('select[name="aeropuertoOrigenId"]').addEventListener("change", validarAeropuertos);
     document.querySelector('select[name="aeropuertoDestinoId"]').addEventListener("change", validarAeropuertos);
 });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("formularioDGD");
+
+        form.addEventListener("submit", function (e) {
+            const filasBultos = document.querySelectorAll("table tbody tr");
+            if (filasBultos.length === 0) {
+                e.preventDefault(); // evita el envío
+                alert("Debes añadir al menos un bulto antes de generar la DGD.");
+            }
+        });
+    });
 </script>
 
