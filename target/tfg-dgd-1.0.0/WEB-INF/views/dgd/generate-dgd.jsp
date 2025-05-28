@@ -70,9 +70,9 @@
     <div class="col-md-3">
         <label class="form-label fw-bold">Categoría</label>
         <select name="categoria" class="form-control">
-            <option value="I-BLANCA">I-BLANCA</option>
-            <option value="II-AMARILLA">II-AMARILLA</option>
-            <option value="III-AMARILLA">III-AMARILLA</option>
+            <option value="I-WHITE">I-WHITE</option>
+            <option value="II-YELLOW">II-YELLOW</option>
+            <option value="III-YELLOW">III-YELLOW</option>
         </select>
     </div>
 
@@ -131,7 +131,7 @@
             <tr>
                 <td>${b.nombreIsotopo}</td>
                 <td>${b.unId}</td>
-                <td>${b.actividad} MBq</td>
+                <td>${b.actividad} ${b.unidadActividad}</td>
                 <td>${b.cantidadBultos}</td>
                 <td>${b.categoria}</td>
                 <td>${b.ti}</td>
@@ -238,11 +238,11 @@ function verificarCategoriaTI() {
 
     let mensaje = "";
     if (!isNaN(ti)) {
-        if (categoria === "I-BLANCA" && ti !== 0) {
+        if (categoria === "I-WHITE" && ti !== 0) {
             mensaje = "Un bulto con TI > 0 no puede tener etiqueta Blanca I.";
-        } else if (categoria === "II-AMARILLA" && (ti <= 0 || ti > 1)) {
+        } else if (categoria === "II-YELLOW" && (ti <= 0 || ti > 1)) {
             mensaje = "TI fuera del rango típico para etiqueta Amarilla II (0 < TI <= 1).";
-        } else if (categoria === "III-AMARILLA" && (ti <= 1 || ti > 10)) {
+        } else if (categoria === "III-YELLOW" && (ti <= 1 || ti > 10)) {
             mensaje = "TI fuera del rango típico para etiqueta Amarilla III (1 < TI <= 10).";
         }
     }

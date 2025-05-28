@@ -21,6 +21,7 @@ public class Bulto {
 
     private String unId;
     private double actividad;
+    private String unidadActividad;
     private int cantidadBultos;
     private String categoria;
     private double ti;
@@ -43,6 +44,9 @@ public class Bulto {
 
     public double getActividad() { return actividad; }
     public void setActividad(double actividad) { this.actividad = actividad; }
+    
+    public String getunidadActividad() { return unidadActividad; }
+    public void setunidadActividad(String unidadActividad) { this.unidadActividad = unidadActividad; }
 
     public int getCantidadBultos() { return cantidadBultos; }
     public void setCantidadBultos(int cantidadBultos) { this.cantidadBultos = cantidadBultos; }

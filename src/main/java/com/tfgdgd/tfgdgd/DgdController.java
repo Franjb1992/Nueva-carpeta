@@ -135,6 +135,7 @@ public class DgdController {
             b.setIsotope(isotopeRepository.findById(bt.getIsotopeId()).orElse(null));
             b.setUnId(bt.getUnId());
             b.setActividad(bt.getActividad());
+            b.setunidadActividad(bt.getunidadActividad());
             b.setCantidadBultos(bt.getCantidadBultos());
             b.setCategoria(bt.getCategoria());
             b.setTi(bt.getTi());

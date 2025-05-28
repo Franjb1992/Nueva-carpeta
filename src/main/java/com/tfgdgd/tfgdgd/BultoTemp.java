@@ -15,6 +15,7 @@ public class BultoTemp {
     private Long isotopeId;
     private String nombreIsotopo;
     private double actividad;
+    private String unidadActividad;
     private int cantidadBultos;
     private String categoria;
     private double ti;
@@ -60,6 +61,14 @@ public class BultoTemp {
 
     public void setActividad(double actividad) {
         this.actividad = actividad;
+    }
+    
+    public String getunidadActividad() {
+        return unidadActividad;
+    }
+
+    public void setunidadActividad(String unidadActividad) {
+        this.unidadActividad = unidadActividad;
     }
 
     public int getCantidadBultos() {
